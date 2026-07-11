@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>كَذّوب أونلاين | لعبة الكذبة الذكية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#171a33; --surface:#242a4d; --surface-2:#2f3660; --line:#3c437a;
+    --gold:#e8b84b; --gold-dim:#e8b84b33; --coral:#e1574c; --mint:#4fd1a5;
+    --text:#f5f1e8; --text-dim:#a8aec7; --radius:20px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:radial-gradient(circle at 15% 0%, #2b2f5b 0%, transparent 45%),
+      radial-gradient(circle at 100% 100%, #1e2247 0%, transparent 50%), var(--bg);
+    color:var(--text); font-family:'Tajawal',sans-serif;
+    display:flex; justify-content:center; padding:24px 14px 60px;
+  }
+  .app{ width:100%; max-width:480px; }
+  .brand{ text-align:center; margin-bottom:20px; }
+  .brand h1{
+    font-family:'Cairo',sans-serif; font-weight:900; font-size:2.2rem; margin:0;
+    background:linear-gradient(180deg,#fff,var(--gold)); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .brand p{ margin:4px 0 0; color:var(--text-dim); font-size:.85rem; }
+  .badge-online{ display:inline-flex; align-items:center; gap:6px; margin-top:8px; padding:4px 12px; border-radius:999px; background:var(--surface-2); border:1px solid var(--line); font-size:.72rem; color:var(--mint); font-weight:700; }
+  .dot{ width:7px; height:7px; border-radius:50%; background:var(--mint); animation:blink 1.4s infinite; }
+  @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:26px 22px; box-shadow:0 20px 40px -20px #00000080; animation:rise .35s ease both; }
+  @keyframes rise{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+  .eyebrow{ font-size:.75rem; color:var(--gold); font-weight:700; letter-spacing:.5px; display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+  .eyebrow::before{ content:""; width:6px; height:6px; border-radius:50%; background:var(--gold); display:inline-block; }
+  h2.title{ font-family:'Cairo',sans-serif; font-weight:800; font-size:1.3rem; margin:2px 0 16px; line-height:1.5; }
+  label{ display:block; font-size:.85rem; color:var(--text-dim); margin-bottom:6px; }
+  input[type=text]{ width:100%; padding:13px 14px; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--text); font-family:'Tajawal',sans-serif; font-size:1rem; outline:none; transition:.15s; text-align:center; }
+  input[type=text]:focus{ border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-dim); }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px 18px; border-radius:14px; border:none; cursor:pointer; font-family:'Cairo',sans-serif; font-weight:800; font-size:1rem; background:var(--gold); color:#1b1f3b; transition:.12s; margin-top:14px; }
+  .btn:hover{ filter:brightness(1.07); transform:translateY(-1px); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; transform:none; }
+  .btn.secondary{ background:var(--surface-2); color:var(--text); border:1px solid var(--line); }
+  .btn.ghost{ background:transparent; color:var(--text-dim); border:1px dashed var(--line); font-size:.8rem; padding:10px; }
+  .row{ display:flex; gap:10px; }
+  .row>*{ flex:1; }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 4px; }
+  .chip-opt{ padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:var(--surface-2); color:var(--text-dim); cursor:pointer; font-size:.85rem; font-weight:700; }
+  .chip-opt.active{ background:var(--gold); color:#1b1f3b; border-color:var(--gold); }
+  .code-box{ text-align:center; padding:22px; background:var(--surface-2); border:1px dashed var(--gold); border-radius:16px; margin-bottom:16px; }
+  .code-box .code{ font-family:'Cairo',sans-serif; font-weight:900; font-size:2.4rem; letter-spacing:6px; color:var(--gold); }
+  .code-box p{ margin:6px 0 0; color:var(--text-dim); font-size:.78rem; }
+  .player-chip{ display:flex; align-items:center; gap:10px; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin-bottom:8px; font-weight:600; }
+  .player-chip .num{ color:var(--gold); font-weight:800; font-family:'Cairo',sans-serif; }
+  .player-chip .you{ margin-right:auto; font-size:.7rem; color:var(--mint); border:1px solid var(--mint); border-radius:999px; padding:2px 8px; }
+  .qbox{ background:var(--surface-2); border:1px solid var(--line); border-radius:16px; padding:20px; text-align:center; margin-bottom:18px; }
+  .qbox .cat{ font-size:.75rem; color:var(--gold); font-weight:700; margin-bottom:8px; }
+  .qbox .qtext{ font-family:'Cairo',sans-serif; font-weight:800; font-size:1.1rem; line-height:1.6; }
+  .answer-card{ border:1px solid var(--line); background:var(--surface-2); border-radius:14px; padding:15px 16px; margin-bottom:10px; cursor:pointer; transition:.15s; font-weight:500; }
+  .answer-card:hover{ border-color:var(--gold); transform:translateY(-1px); }
+  .answer-card.correct{ border-color:var(--mint); background:#4fd1a51f; }
+  .answer-card.wrong-picked{ border-color:var(--coral); background:#e1574c1f; }
+  .answer-card .meta{ font-size:.75rem; color:var(--text-dim); margin-top:6px; }
+  .score-row{ display:flex; justify-content:space-between; align-items:center; padding:12px 14px; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; margin-bottom:8px; }
+  .score-row .name{ font-weight:700; }
+  .score-row .pts{ font-family:'Cairo',sans-serif; font-weight:900; color:var(--gold); }
+  .score-row.leader{ border-color:var(--gold); box-shadow:0 0 0 1px var(--gold) inset; }
+  .score-row .delta{ font-size:.75rem; color:var(--mint); margin-right:6px; }
+  .waiting{ text-align:center; padding:30px 10px; }
+  .spinner{ width:38px; height:38px; border-radius:50%; border:3px solid var(--surface-2); border-top-color:var(--gold); margin:0 auto 16px; animation:spin 1s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .waiting p{ color:var(--text-dim); font-size:.9rem; }
+  .footer-note{ text-align:center; color:var(--text-dim); font-size:.75rem; margin-top:18px; }
+  .trophy{ font-size:2.4rem; text-align:center; margin-bottom:6px; }
+  .err{ color:var(--coral); font-size:.85rem; font-weight:700; margin-top:8px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand">
+    <h1>كَذّوب</h1>
+    <p>اكذب بذكاء، صوّت بحكمة</p>
+    <div class="badge-online"><span class="dot"></span>نسخة أونلاين — كل واحد من تلفونه</div>
+  </div>
+  <div id="stage"></div>
+</div>
+
+<script>
+/* ---------------- question bank (same as offline version) ---------------- */
+const CURATED = [
+  {cat:"جسم الإنسان", q:"كم عدد عظام جسم الإنسان البالغ؟", a:"206"},
+  {cat:"رياضة", q:"في أي سنة أُقيمت أول كأس عالم لكرة القدم؟", a:"1930"},
+  {cat:"جغرافيا", q:"كم عدد الدول الأعضاء في جامعة الدول العربية؟", a:"22"},
+  {cat:"جغرافيا", q:"ما هو أطول نهر في العالم؟", a:"نهر النيل"},
+  {cat:"ألعاب", q:"كم عدد المربعات على رقعة الشطرنج؟", a:"64"},
+  {cat:"تاريخ", q:"في أي سنة استقلّت تونس؟", a:"1956"},
+  {cat:"فلك", q:"كم عدد كواكب المجموعة الشمسية؟", a:"8"},
+  {cat:"جغرافيا", q:"ما أصغر دولة في العالم من حيث المساحة؟", a:"الفاتيكان"},
+  {cat:"علوم", q:"كم تبلغ سرعة الضوء تقريباً بالكيلومتر في الثانية؟", a:"300000"},
+  {cat:"علوم", q:"من هو مخترع المصباح الكهربائي؟", a:"توماس إديسون"},
+  {cat:"جسم الإنسان", q:"كم عدد أسنان الإنسان البالغ الطبيعية؟", a:"32"},
+  {cat:"جغرافيا", q:"ما عاصمة أستراليا؟", a:"كانبرا"},
+  {cat:"حيوانات", q:"كم عدد قلوب الأخطبوط؟", a:"3"},
+  {cat:"تاريخ", q:"في أي سنة هبط الإنسان على سطح القمر لأول مرة؟", a:"1969"},
+  {cat:"رياضة", q:"كم عدد لاعبي فريق كرة القدم داخل الملعب الواحد؟", a:"11"},
+  {cat:"جغرافيا", q:"ما اسم أكبر محيط في العالم؟", a:"المحيط الهادئ"},
+  {cat:"لغة", q:"كم عدد أحرف الأبجدية العربية؟", a:"28"},
+  {cat:"جغرافيا", q:"ما أعلى قمة جبلية في العالم؟", a:"إفرست"},
+  {cat:"رياضة", q:"كم عدد لاعبي فريق كرة السلة داخل الملعب؟", a:"5"},
+  {cat:"تاريخ", q:"في أي سنة تأسست منظمة الأمم المتحدة؟", a:"1945"},
+  {cat:"علوم", q:"كم عدد أيام السنة الكبيسة؟", a:"366"},
+  {cat:"حيوانات", q:"ما أسرع حيوان بري في العالم؟", a:"الفهد"},
+  {cat:"موسيقى", q:"كم عدد أوتار آلة الغيتار الكلاسيكية؟", a:"6"},
+  {cat:"تاريخ", q:"في أي سنة سقط جدار برلين؟", a:"1989"},
+  {cat:"جغرافيا", q:"كم عدد قارات العالم؟", a:"7"},
+  {cat:"جغرافيا", q:"ما أكبر صحراء حارة في العالم؟", a:"الصحراء الكبرى"},
+  {cat:"علوم", q:"كم يوماً يستغرق دوران الأرض حول الشمس؟", a:"365"},
+  {cat:"أدب", q:"من كاتب رواية «الأمير الصغير»؟", a:"أنطوان دو سانت إكزوبيري"},
+  {cat:"علوم", q:"كم عدد ألوان قوس قزح؟", a:"7"},
+  {cat:"جسم الإنسان", q:"ما اسم أصغر عظمة في جسم الإنسان (توجد في الأذن)؟", a:"الركابي"},
+];
+const COUNTRY_CAPITAL = [
+["أفغانستان","كابول"],["ألبانيا","تيرانا"],["الجزائر","الجزائر"],["أندورا","أندورا لا فيلا"],
+["أنجولا","لواندا"],["أنتيغوا وباربودا","سانت جونز"],["الأرجنتين","بوينس آيرس"],["أرمينيا","يريفان"],
+["أستراليا","كانبرا"],["النمسا","فيينا"],["أذربيجان","باكو"],["الباهاماس","ناسو"],
+["البحرين","المنامة"],["بنجلاديش","دكا"],["باربادوس","بريدجتاون"],["بيلاروسيا","مينسك"],
+["بلجيكا","بروكسل"],["بليز","بلموبان"],["بنين","بورتو نوفو"],["بوتان","تيمفو"],
+["البوسنة والهرسك","ساراييفو"],["بوتسوانا","جابورون"],["البرازيل","برازيليا"],["بروناي","بندر سري بكاوان"],
+["بلغاريا","صوفيا"],["بوركينا فاسو","واغادوغو"],["بوروندي","بوجمبورا"],["كمبوديا","بنوم بنه"],
+["الكاميرون","ياوندي"],["كندا","أوتاوا"],["الرأس الأخضر","برايا"],["جمهورية أفريقيا الوسطى","بانغي"],
+["تشاد","انجمينا"],["تشيلي","سانتياغو"],["الصين","بكين"],["كولومبيا","بوغوتا"],
+["جزر القمر","موروني"],["جمهورية الكونغو الديمقراطية","كينشاسا"],["جمهورية الكونغو","برازافيل"],
+["كوستاريكا","سان خوسيه"],["ساحل العاج","ياموسوكرو"],["كرواتيا","زغرب"],["كوبا","هافانا"],
+["قبرص","نيقوسيا"],["التشيك","براغ"],["الدنمارك","كوبنهاغن"],["جيبوتي","جيبوتي"],
+["دومينيكا","روسو"],["جمهورية الدومينيكان","سانتو دومينغو"],["تيمور الشرقية","ديلي"],["الإكوادور","كيتو"],
+["مصر","القاهرة"],["السلفادور","سان سلفادور"],["غينيا الاستوائية","مالابو"],["إريتريا","أسمرة"],
+["إستونيا","تالين"],["إثيوبيا","أديس أبابا"],["فيجي","سوفا"],["فنلندا","هلسنكي"],
+["فرنسا","باريس"],["الغابون","ليبرفيل"],["غامبيا","بانجول"],["جورجيا","تبليسي"],
+["ألمانيا","برلين"],["غانا","أكرا"],["اليونان","أثينا"],["غرينادا","سانت جورجز"],
+["غواتيمالا","غواتيمالا"],["غينيا","كوناكري"],["غينيا بيساو","بيساو"],["غيانا","جورج تاون"],
+["هايتي","بورت أو برانس"],["هندوراس","تيغوسيغالبا"],["المجر","بودابست"],["أيسلندا","ريكيافيك"],
+["الهند","نيودلهي"],["إندونيسيا","جاكرتا"],["إيران","طهران"],["العراق","بغداد"],
+["أيرلندا","دبلن"],["إيطاليا","روما"],["جامايكا","كينغستون"],["اليابان","طوكيو"],
+["الأردن","عمان"],["كينيا","نيروبي"],["كيريباتي","تاراوا"],["كوريا الشمالية","بيونغيانغ"],
+["كوريا الجنوبية","سول"],["الكويت","مدينة الكويت"],["قيرغيزستان","بيشكك"],["لاوس","فيينتيان"],
+["لاتفيا","ريغا"],["لبنان","بيروت"],["ليسوتو","ماسيرو"],["ليبيريا","مونروفيا"],
+["ليبيا","طرابلس"],["ليختنشتاين","فادوتس"],["ليتوانيا","فيلنيوس"],["لوكسمبورغ","لوكسمبورغ"],
+["مقدونيا الشمالية","سكوبيه"],["مدغشقر","أنتاناناريفو"],["مالاوي","ليلونغوي"],["ماليزيا","كوالالمبور"],
+["المالديف","ماليه"],["مالي","باماكو"],["مالطا","فاليتا"],["جزر مارشال","ماجورو"],
+["موريتانيا","نواكشوط"],["موريشيوس","بورت لويس"],["المكسيك","مدينة مكسيكو"],["مولدوفا","كيشيناو"],
+["موناكو","موناكو"],["منغوليا","أولان باتور"],["الجبل الأسود","بودغوريتسا"],["المغرب","الرباط"],
+["موزمبيق","مابوتو"],["ناميبيا","ويندهوك"],["نيبال","كاتماندو"],["نيوزيلندا","ويلينغتون"],
+["نيكاراغوا","ماناغوا"],["النيجر","نيامي"],["نيجيريا","أبوجا"],["النرويج","أوسلو"],
+["عُمان","مسقط"],["باكستان","إسلام آباد"],["بالاو","ميلكيوك"],["بنما","بنما سيتي"],
+["بابوا غينيا الجديدة","بورت مورسبي"],["باراغواي","أسونسيون"],["بيرو","ليما"],["الفلبين","مانيلا"],
+["بولندا","وارسو"],["البرتغال","لشبونة"],["قطر","الدوحة"],["رومانيا","بوخارست"],
+["روسيا","موسكو"],["رواندا","كيغالي"],["سانت كيتس ونيفيس","باستير"],["سانت لوسيا","كاستريس"],
+["سانت فينسنت والغرينادين","كينغستاون"],["ساموا","أبيا"],["سان مارينو","سان مارينو"],["ساو تومي وبرينسيب","ساو تومي"],
+["السعودية","الرياض"],["السنغال","داكار"],["صربيا","بلغراد"],["سيشل","فيكتوريا"],
+["سيراليون","فريتاون"],["سنغافورة","سنغافورة"],["سلوفاكيا","براتيسلافا"],["سلوفينيا","ليوبليانا"],
+["جزر سليمان","هونيارا"],["الصومال","مقديشو"],["جنوب السودان","جوبا"],["إسبانيا","مدريد"],
+["سريلانكا","كولومبو"],["السودان","الخرطوم"],["سورينام","باراماريبو"],["السويد","ستوكهولم"],
+["سويسرا","برن"],["سوريا","دمشق"],["تايوان","تايبيه"],["طاجيكستان","دوشنبه"],
+["تنزانيا","دودوما"],["تايلاند","بانكوك"],["توغو","لومي"],["تونغا","نوكو ألوفا"],
+["ترينيداد وتوباغو","بورت أوف سبين"],["تونس","تونس"],["تركيا","أنقرة"],["تركمانستان","عشق أباد"],
+["توفالو","فونافوتي"],["أوغندا","كامبالا"],["أوكرانيا","كييف"],["الإمارات العربية المتحدة","أبوظبي"],
+["المملكة المتحدة","لندن"],["الولايات المتحدة","واشنطن"],["أوروغواي","مونتفيدو"],["أوزبكستان","طشقند"],
+["فانواتو","بورت فيلا"],["الفاتيكان","الفاتيكان"],["فنزويلا","كاراكاس"],["فيتنام","هانوي"],
+["اليمن","صنعاء"],["زامبيا","لوساكا"],["زيمبابوي","هراري"]
+];
+function buildGeoQuestions(){
+  const list = [];
+  COUNTRY_CAPITAL.forEach(([country, capital])=>{
+    if(country===capital) return;
+    list.push({cat:"جغرافيا", q:`ما عاصمة ${country}؟`, a:capital});
+    list.push({cat:"جغرافيا", q:`ما اسم الدولة التي عاصمتها ${capital}؟`, a:country});
+  });
+  COUNTRY_CAPITAL.forEach(([country, capital])=>{
+    if(country===capital) list.push({cat:"جغرافيا", q:`ما عاصمة ${country}؟`, a:capital});
+  });
+  return list;
+}
+function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function buildMathQuestions(){
+  const seen = new Set(); const list = [];
+  function push(q,a){ if(seen.has(q)) return; seen.add(q); list.push({cat:"حساب", q, a:String(a)}); }
+  for(let i=0;i<160;i++){ const a=rnd(10,600), b=rnd(10,600); push(`كم يساوي ${a} + ${b}؟`, a+b); }
+  for(let i=0;i<160;i++){ let a=rnd(20,700), b=rnd(10,a-1); push(`كم يساوي ${a} - ${b}؟`, a-b); }
+  for(let i=0;i<160;i++){ const a=rnd(2,60), b=rnd(2,60); push(`كم يساوي ${a} × ${b}؟`, a*b); }
+  const pct=[10,20,25,50,75];
+  for(let i=0;i<120;i++){ const p=pct[rnd(0,pct.length-1)]; const base=rnd(1,40)*4; push(`كم يساوي ${p}% من ${base}؟`, Math.round(base*p/100)); }
+  for(let x=2;x<=45;x++){ push(`كم يساوي مربع العدد ${x}؟`, x*x); }
+  for(let i=0;i<110;i++){ const x=rnd(2,300); push(`كم يساوي ضعف العدد ${x}؟`, x*2); }
+  for(let i=0;i<110;i++){ const x=rnd(1,300)*2; push(`كم يساوي نصف العدد ${x}؟`, x/2); }
+  const wt=[
+    (n,m)=>[`عندك ${n} دينار وصرفت ${m} دينار، قداش بقى لك؟`, n-m],
+    (n,m)=>[`اشتريت ${n} كتاب وبعت ${m} منهم، قداش بقى عندك؟`, n-m],
+    (n,m)=>[`في الفصل ${n} تلميذ وزادو ${m} تلاميذ جدد، قداش أصبح العدد الكلي؟`, n+m],
+    (n,m)=>[`عندك ${n} صورة وحطيت ${m} صورة زيادة في الألبوم، قداش المجموع؟`, n+m],
+    (n,m)=>[`سافرت ${n} كيلومتر يوم أول وزدت ${m} كيلومتر يوم ثاني، قداش قطعت بالمجموع؟`, n+m],
+  ];
+  for(let i=0;i<150;i++){ const t=wt[rnd(0,wt.length-1)]; const n=rnd(15,90), m=rnd(1,14); const [q,a]=t(n,m); push(q,a); }
+  return list;
+}
+const QUESTIONS = [...CURATED, ...buildGeoQuestions(), ...buildMathQuestions()];
+function normalizeAnswer(s){
+  return String(s).trim().replace(/[إأآا]/g,'ا').replace(/ى/g,'ي')
+    .replace(/[\u064B-\u0652\u0670\u0640]/g,'').replace(/[",.\s]/g,'').toLowerCase();
+}
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function genCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c=''; for(let i=0;i<5;i++) c += chars[Math.floor(Math.random()*chars.length)];
+  return c;
+}
+
+/* ---------------- shared storage helpers ---------------- */
+async function sget(key){
+  try{ const r = await window.storage.get(key, true); return r ? JSON.parse(r.value) : null; }
+  catch(e){ return null; }
+}
+async function sset(key, value){
+  try{ await window.storage.set(key, JSON.stringify(value), true); return true; }
+  catch(e){ console.error('storage set failed', e); return false; }
+}
+async function slist(prefix){
+  try{ const r = await window.storage.list(prefix, true); return (r && r.keys) ? r.keys : []; }
+  catch(e){ return []; }
+}
+const gameKey = code => `kadhoub:${code}:game`;
+const joinKey = (code,id) => `kadhoub:${code}:join:${id}`;
+const joinPrefix = code => `kadhoub:${code}:join:`;
+const ansKey = (code,round,id) => `kadhoub:${code}:ans:${round}:${id}`;
+const ansPrefix = (code,round) => `kadhoub:${code}:ans:${round}:`;
+const voteKey = (code,round,id) => `kadhoub:${code}:vote:${round}:${id}`;
+const votePrefix = (code,round) => `kadhoub:${code}:vote:${round}:`;
+
+/* ---------------- local client state ---------------- */
+let S = {
+  screen:'home',
+  myId: uid(),
+  myName:'',
+  code:null,
+  isHost:false,
+  game:null,
+  lastGameSnapshot:null,
+  answered:false, voted:false,
+  answeredRound:-1, votedRound:-1,
+  numRounds:8,
+  pollTimer:null,
+  err:''
+};
+
+const stageEl = document.getElementById('stage');
+function render(){ stageEl.innerHTML=''; VIEWS[S.screen](); }
+function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; }
+
+/* ---------------- polling loop ---------------- */
+function startPolling(){
+  stopPolling();
+  S.pollTimer = setInterval(tick, 1800);
+  tick();
+}
+function stopPolling(){ if(S.pollTimer){ clearInterval(S.pollTimer); S.pollTimer=null; } }
+
+async function tick(){
+  if(!S.code) return;
+  const g = await sget(gameKey(S.code));
+  if(!g) return;
+
+  if(S.isHost) await hostMaintain(g);
+
+  const freshStr = JSON.stringify(g);
+  if(freshStr !== S.lastGameSnapshot){
+    S.lastGameSnapshot = freshStr;
+    S.game = g;
+    if(S.game.round !== S.answeredRound) S.answered = false;
+    if(S.game.round !== S.votedRound) S.voted = false;
+    syncScreenFromPhase();
+    render();
+  }
+}
+
+function syncScreenFromPhase(){
+  if(!S.game) return;
+  const map = { lobby:'lobby', answering:'answering', voting:'voting', reveal:'reveal', gameover:'gameover' };
+  S.screen = map[S.game.phase] || 'lobby';
+}
+
+/* ---------------- host-only maintenance ---------------- */
+async function hostMaintain(g){
+  if(g.phase === 'lobby'){
+    const keys = await slist(joinPrefix(S.code));
+    let changed = false;
+    for(const k of keys){
+      const id = k.slice(joinPrefix(S.code).length);
+      if(!g.players.some(p=>p.id===id)){
+        const req = await sget(k);
+        if(req){ g.players.push({id, name:req.name, score:0}); changed = true; }
+      }
+    }
+    if(changed){ g.updatedAt = Date.now(); await sset(gameKey(S.code), g); }
+  }
+  else if(g.phase === 'answering'){
+    const keys = await slist(ansPrefix(S.code, g.round));
+    if(keys.length >= g.players.length && keys.length>0){
+      await advanceToVoting(g, keys);
+    }
+  }
+  else if(g.phase === 'voting'){
+    const keys = await slist(votePrefix(S.code, g.round));
+    if(keys.length >= g.players.length && keys.length>0){
+      await advanceToReveal(g, keys);
+    }
+  }
+}
+
+async function advanceToVoting(g, ansKeys){
+  const officialNorm = normalizeAnswer(g.question.a);
+  const correctOwners = [];
+  const fakes = [];
+  for(const k of ansKeys){
+    const id = k.slice(ansPrefix(S.code, g.round).length);
+    const val = await sget(k);
+    if(!val) continue;
+    if(normalizeAnswer(val.text) === officialNorm){ correctOwners.push(id); }
+    else { fakes.push({ id: uid(), text: val.text, ownerId: id, isCorrect:false }); }
+  }
+  const correctItem = { id: uid(), text: g.question.a, ownerId:null, isCorrect:true, owners: correctOwners };
+  g.revealList = shuffle([correctItem, ...fakes]);
+  g.phase = 'voting';
+  g.updatedAt = Date.now();
+  await sset(gameKey(S.code), g);
+}
+
+async function advanceToReveal(g, voteKeys){
+  const votesByAnswer = {};
+  for(const k of voteKeys){
+    const id = k.slice(votePrefix(S.code, g.round).length);
+    const val = await sget(k);
+    if(!val) continue;
+    (votesByAnswer[val.answerId] = votesByAnswer[val.answerId] || []).push(id);
+  }
+  const lastScores = {};
+  g.players.forEach(p=> lastScores[p.id]=0 );
+
+  const correctItem = g.revealList.find(a=>a.isCorrect);
+  if(correctItem && correctItem.owners){
+    correctItem.owners.forEach(ownerId=>{
+      const p = g.players.find(pp=>pp.id===ownerId);
+      if(p){ p.score += 2; lastScores[ownerId] = (lastScores[ownerId]||0) + 2; }
+    });
+  }
+  g.revealList.forEach(item=>{
+    const voterIds = votesByAnswer[item.id] || [];
+    const voterNames = voterIds.map(id => (g.players.find(p=>p.id===id)||{name:'؟'}).name);
+    item.voterNames = voterNames;
+    if(item.isCorrect){
+      voterIds.forEach(vid=>{
+        const p = g.players.find(pp=>pp.id===vid);
+        if(p){ p.score += 2; lastScores[vid] = (lastScores[vid]||0) + 2; }
+      });
+    } else if(item.ownerId){
+      if(voterIds.length){
+        const owner = g.players.find(pp=>pp.id===item.ownerId);
+        if(owner){ owner.score += voterIds.length; lastScores[item.ownerId] = (lastScores[item.ownerId]||0) + voterIds.length; }
+      }
+    }
+  });
+
+  g.lastScores = lastScores;
+  g.phase = 'reveal';
+  g.updatedAt = Date.now();
+  await sset(gameKey(S.code), g);
+}
+
+async function hostNextRound(){
+  const g = S.game;
+  if(g.round + 1 >= g.totalRounds){
+    g.phase = 'gameover';
+  } else {
+    g.round += 1;
+    let idx;
+    do{ idx = rnd(0, QUESTIONS.length-1); } while(g.usedIdx.includes(idx) && g.usedIdx.length < QUESTIONS.length);
+    g.usedIdx.push(idx);
+    g.question = QUESTIONS[idx];
+    g.revealList = null;
+    g.lastScores = null;
+    g.phase = 'answering';
+  }
+  g.updatedAt = Date.now();
+  await sset(gameKey(S.code), g);
+  S.lastGameSnapshot = null;
+  await tick();
+}
+
+async function hostForceAdvance(){
+  const g = S.game;
+  if(g.phase === 'answering'){
+    const keys = await slist(ansPrefix(S.code, g.round));
+    await advanceToVoting(g, keys);
+  } else if(g.phase === 'voting'){
+    const keys = await slist(votePrefix(S.code, g.round));
+    await advanceToReveal(g, keys);
+  }
+  S.lastGameSnapshot = null;
+  await tick();
+}
+
+/* ---------------- views ---------------- */
+function viewHome(){
+  const card = el(`
+    <div class="card">
+      <div class="eyebrow">ابدأ</div>
+      <h2 class="title">أنشئ غرفة جديدة أو انضم لغرفة صحابك</h2>
+      <label>اسمك</label>
+      <input type="text" id="name" placeholder="اسمك" maxlength="16">
+      <button class="btn" id="createBtn">أنشئ غرفة جديدة (كن المضيف)</button>
+      <div class="row" style="margin-top:10px;">
+        <input type="text" id="joinCode" placeholder="كود الغرفة" maxlength="5" style="text-transform:uppercase;">
+        <button class="btn secondary" id="joinBtn" style="flex:0 0 auto;">انضم</button>
+      </div>
+      <div class="err" id="err" style="display:none;"></div>
+      <div class="footer-note">لازم صحابك يفتحوا نفس هالرابط، ويدخلوا الكود اللي تعطيهم إياه.</div>
+    </div>
+  `);
+  stageEl.appendChild(card);
+  const nameInput = card.querySelector('#name');
+  const errBox = card.querySelector('#err');
+  function showErr(msg){ errBox.textContent = msg; errBox.style.display='block'; }
+
+  card.querySelector('#createBtn').onclick = ()=>{
+    const name = nameInput.value.trim();
+    if(!name){ showErr('اكتب اسمك أول.'); return; }
+    S.myName = name;
+    S.screen = 'createSetup';
+    render();
+  };
+  card.querySelector('#joinBtn').onclick = async ()=>{
+    const name = nameInput.value.trim();
+    const code = card.querySelector('#joinCode').value.trim().toUpperCase();
+    if(!name){ showErr('اكتب اسمك أول.'); return; }
+    if(!code){ showErr('اكتب كود الغرفة.'); return; }
+    const g = await sget(gameKey(code));
+    if(!g){ showErr('ما لقيتش غرفة بهذا الكود.'); return; }
+    if(g.phase !== 'lobby'){ showErr('اللعبة بدات، ما تنجمش تنضم توّة.'); return; }
+    S.myName = name; S.code = code; S.isHost = false;
+    await sset(joinKey(code, S.myId), { name, requestedAt: Date.now() });
+    S.lastGameSnapshot = null;
+    startPolling();
+  };
+}
+
+function viewCreateSetup(){
+  const card = el(`
+    <div class="card">
+      <div class="eyebrow">إعداد الغرفة</div>
+      <h2 class="title">اختار عدد الأسئلة</h2>
+      <div class="chips" id="chips"></div>
+      <button class="btn" id="go">أنشئ الغرفة</button>
+      <button class="btn ghost" id="back">رجوع</button>
+    </div>
+  `);
+  stageEl.appendChild(card);
+  const chips = card.querySelector('#chips');
+  [4,6,8,10,15].forEach(n=>{
+    const c = el(`<div class="chip-opt ${n===S.numRounds?'active':''}">${n}</div>`);
+    c.onclick = ()=>{ S.numRounds=n; [...chips.children].forEach(x=>x.classList.remove('active')); c.classList.add('active'); };
+    chips.appendChild(c);
+  });
+  card.querySelector('#back').onclick = ()=>{ S.screen='home'; render(); };
+  card.querySelector('#go').onclick = async ()=>{
+    const code = genCode();
+    S.code = code; S.isHost = true;
+    const g = {
+      hostId: S.myId, phase:'lobby', players:[{id:S.myId,name:S.myName,score:0}],
+      round:0, totalRounds:S.numRounds, question:null, revealList:null, lastScores:null,
+      usedIdx:[], updatedAt: Date.now()
+    };
+    await sset(gameKey(code), g);
+    S.lastGameSnapshot = null;
+    startPolling();
+  };
+}
+
+function viewLobby(){
+  const g = S.game;
+  const card = el(`
+    <div class="card">
+      <div class="code-box">
+        <div class="code">${S.code}</div>
+        <p>أعطي هذا الكود لصحابك باش ينضمو</p>
+      </div>
+      <div class="eyebrow">اللاعبين (${g ? g.players.length : 1})</div>
+      <div id="plist"></div>
+      <div id="hostArea"></div>
+      <button class="btn ghost" id="leave">مغادرة</button>
+    </div>
+  `);
+  stageEl.appendChild(card);
+  const plist = card.querySelector('#plist');
+  (g ? g.players : [{id:S.myId,name:S.myName}]).forEach((p,i)=>{
+    const row = el(`<div class="player-chip"><span class="num">${i+1}.</span><span>${p.name}</span>${p.id===S.myId?'<span class="you">إنتي/إنتَ</span>':''}</div>`);
+    plist.appendChild(row);
+  });
+  const hostArea = card.querySelector('#hostArea');
+  if(S.isHost){
+    const canStart = g && g.players.length >= 3;
+    const startBtn = el(`<button class="btn" ${canStart?'':'disabled'}>${canStart?'ابدأ اللعبة':'بحاجة لـ 3 لاعبين على الأقل'}</button>`);
+    startBtn.onclick = async ()=>{
+      if(!canStart) return;
+      const idx = rnd(0, QUESTIONS.length-1);
+      g.usedIdx = [idx];
+      g.question = QUESTIONS[idx];
+      g.phase = 'answering';
+      g.round = 0;
+      g.updatedAt = Date.now();
+      await sset(gameKey(S.code), g);
+      S.lastGameSnapshot = null;
+      await tick();
+    };
+    hostArea.appendChild(startBtn);
+  } else {
+    hostArea.appendChild(el(`<div class="waiting"><div class="spinner"></div><p>بانتظار المضيف يبدأ اللعبة...</p></div>`));
+  }
+  card.querySelector('#leave').onclick = leaveRoom;
+}
+
+function progressLabel(){
+  const g = S.game;
+  return `سؤال ${g.round+1} من ${g.totalRounds}`;
+}
+
+function viewAnswering(){
+  const g = S.game;
+  const card = el(`<div class="card"></div>`);
+  stageEl.appendChild(card);
+  if(S.answered){
+    card.innerHTML = `
+      <div class="eyebrow">${progressLabel()}</div>
+      <div class="waiting"><div class="spinner"></div><p>بعثت إجابتك، بانتظار البقية...</p></div>
+      ${S.isHost? '<button class="btn secondary" id="skip">تخطي المنتظرين وكمل</button>':''}
+    `;
+    const skip = card.querySelector('#skip');
+    if(skip) skip.onclick = hostForceAdvance;
+    return;
+  }
+  card.innerHTML = `
+    <div class="eyebrow">${progressLabel()} — اكتب إجابة كاذبة مقنعة</div>
+    <div class="qbox">
+      <div class="cat">${g.question.cat}</div>
+      <div class="qtext">${g.question.q}</div>
+    </div>
+    <label>إجابتك (لو ما تعرفش الصحيحة، اختلقها بذكاء)</label>
+    <input type="text" id="ans" placeholder="اكتب هنا..." autocomplete="off">
+    <div id="warn" style="display:none; color:var(--coral); font-size:.85rem; margin-top:8px; font-weight:700;"></div>
+    <button class="btn" id="submitAns" disabled>تأكيد الإجابة</button>
+  `;
+  const input = card.querySelector('#ans');
+  const btn = card.querySelector('#submitAns');
+  const warn = card.querySelector('#warn');
+  input.addEventListener('input', ()=>{ btn.disabled = input.value.trim().length===0; warn.style.display='none'; });
+  input.focus();
+  async function submit(){
+    const v = input.value.trim();
+    if(!v) return;
+    if(normalizeAnswer(v) === normalizeAnswer(g.question.a)){
+      warn.textContent = '🚫 هذي هي الإجابة الصحيحة بالضبط! لازم تبدّلها بكذبة.';
+      warn.style.display='block'; input.select(); return;
+    }
+    btn.disabled = true;
+    await sset(ansKey(S.code, g.round, S.myId), { text:v });
+    S.answered = true; S.answeredRound = g.round;
+    render();
+  }
+  btn.onclick = submit;
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !btn.disabled){ e.preventDefault(); submit(); }});
+}
+
+function viewVoting(){
+  const g = S.game;
+  const card = el(`<div class="card"></div>`);
+  stageEl.appendChild(card);
+  if(S.voted){
+    card.innerHTML = `
+      <div class="eyebrow">${progressLabel()}</div>
+      <div class="waiting"><div class="spinner"></div><p>بعثت تصويتك، بانتظار البقية...</p></div>
+      ${S.isHost? '<button class="btn secondary" id="skip">تخطي المنتظرين وكمل</button>':''}
+    `;
+    const skip = card.querySelector('#skip');
+    if(skip) skip.onclick = hostForceAdvance;
+    return;
+  }
+  card.innerHTML = `
+    <div class="eyebrow">${progressLabel()} — شنو في رأيك الإجابة الصحيحة؟</div>
+    <div class="qbox">
+      <div class="cat">${g.question.cat}</div>
+      <div class="qtext">${g.question.q}</div>
+    </div>
+    <div id="opts"></div>
+  `;
+  const opts = card.querySelector('#opts');
+  (g.revealList || []).forEach(item=>{
+    if(item.ownerId === S.myId) return;
+    if(item.isCorrect && item.owners && item.owners.includes(S.myId)) return;
+    const c = el(`<div class="answer-card">${item.text}</div>`);
+    c.onclick = async ()=>{
+      await sset(voteKey(S.code, g.round, S.myId), { answerId: item.id });
+      S.voted = true; S.votedRound = g.round;
+      render();
+    };
+    opts.appendChild(c);
+  });
+}
+
+function viewReveal(){
+  const g = S.game;
+  const card = el(`
+    <div class="card">
+      <div class="eyebrow">النتيجة</div>
+      <h2 class="title">${g.question.q}</h2>
+      <div id="rlist"></div>
+      <div class="eyebrow" style="margin-top:18px;">الترتيب</div>
+      <div id="scores"></div>
+    </div>
+  `);
+  stageEl.appendChild(card);
+  const rlist = card.querySelector('#rlist');
+  (g.revealList || []).forEach((item,i)=>{
+    const votes = item.voterNames || [];
+    const owner = item.ownerId ? g.players.find(p=>p.id===item.ownerId) : null;
+    const cls = item.isCorrect ? 'correct' : (votes.length ? 'wrong-picked' : '');
+    const wrap = el(`<div class="answer-card ${cls}"></div>`);
+    let meta = '';
+    if(item.isCorrect){
+      const selfNames = (item.owners||[]).map(id => (g.players.find(p=>p.id===id)||{name:'؟'}).name);
+      meta = 'الإجابة الصحيحة ✓';
+      if(selfNames.length) meta += ` · 🎯 ${selfNames.join('، ')} جاوب/جاوبوا صح من غير ما يقصدوا! (+2 تلقائي)`;
+      meta += votes.length ? ` · صوّت لها: ${votes.join('، ')} (+2 لكل واحد)` : ' · محدش صوّت لها 😅';
+    } else {
+      meta = `كذبة ${owner ? owner.name : '؟'}` + (votes.length ? ` · صدّقها: ${votes.join('، ')} (+${votes.length} لـ${owner?owner.name:'؟'})` : ' · محدش انخدع بيها');
+    }
+    wrap.innerHTML = `<div>${item.text}</div><div class="meta">${meta}</div>`;
+    rlist.appendChild(wrap);
+  });
+  const scores = card.querySelector('#scores');
+  g.players.slice().sort((a,b)=>b.score-a.score).forEach((p,i)=>{
+    const d = g.lastScores ? g.lastScores[p.id] : 0;
+    const row = el(`<div class="score-row ${i===0?'leader':''}"><span class="name">${i+1}. ${p.name}</span><span class="pts">${p.score} ${d?`<span class="delta">+${d}</span>`:''}</span></div>`);
+    scores.appendChild(row);
+  });
+  if(S.isHost){
+    const isLast = g.round + 1 >= g.totalRounds;
+    const btn = el(`<button class="btn">${isLast? 'شوف النتيجة النهائية' : 'السؤال التالي'}</button>`);
+    btn.onclick = hostNextRound;
+    card.appendChild(btn);
+  } else {
+    card.appendChild(el(`<div class="waiting"><p>بانتظار المضيف يكمل...</p></div>`));
+  }
+}
+
+function viewGameover(){
+  const g = S.game;
+  const ranked = g.players.slice().sort((a,b)=>b.score-a.score);
+  const card = el(`
+    <div class="card" style="text-align:center;">
+      <div class="trophy">🏆</div>
+      <div class="eyebrow" style="justify-content:center;">انتهت اللعبة</div>
+      <h2 class="title">أكذب واحد في المجموعة هو...</h2>
+      <div id="scores" style="text-align:right;"></div>
+      <button class="btn ghost" id="leave">مغادرة</button>
+    </div>
+  `);
+  stageEl.appendChild(card);
+  const scores = card.querySelector('#scores');
+  ranked.forEach((p,i)=>{
+    const row = el(`<div class="score-row ${i===0?'leader':''}"><span class="name">${i+1}. ${p.name}</span><span class="pts">${p.score}</span></div>`);
+    scores.appendChild(row);
+  });
+  card.querySelector('#leave').onclick = leaveRoom;
+}
+
+function leaveRoom(){
+  stopPolling();
+  S = { screen:'home', myId: S.myId, myName:'', code:null, isHost:false, game:null,
+        lastGameSnapshot:null, answered:false, voted:false, answeredRound:-1, votedRound:-1,
+        numRounds:8, pollTimer:null, err:'' };
+  render();
+}
+
+const VIEWS = {
+  home: viewHome,
+  createSetup: viewCreateSetup,
+  lobby: viewLobby,
+  answering: viewAnswering,
+  voting: viewVoting,
+  reveal: viewReveal,
+  gameover: viewGameover
+};
+
+render();
+</script>
+</body>
+</html>
